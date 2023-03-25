@@ -1,0 +1,12 @@
+
+// 生成 go 文件 (不加 -Dlanguage 默认生成 java 文件)
+antlr -Dlanguage=Go -o parser EchoLang
+
+
+java -jar /usr/local/lib/antlr-4.7.2-complete.jar
+
+
+// 在当前目录执行
+export CLASSPATH=".:/usr/local/lib/antlr-4.7.2-complete.jar"
+
+
