@@ -98,6 +98,9 @@ func (s *JsonLangListenerImplement) terminalReceiver(n antlr.TerminalNode) {
 	text := tk.GetText()
 	var v *value
 
+	// token 的类型序号参考 antlr 生成的 jsonLang.tokens 文件
+	// 叶节点的数据一定是 string / number / bool / null
+
 	switch tp {
 	case 10:
 		text = text[1 : len(text)-1] // 去掉双引号
@@ -127,6 +130,8 @@ func (s *JsonLangListenerImplement) terminalReceiver(n antlr.TerminalNode) {
 	cur.val = &value{
 		tp: cur.tp,
 	}
+
+	// 根据 jsonLang.g4 的定义, 叶节点的父节点, 只可能是 value / array / pair
 	switch cur.tp {
 	case typeValue:
 		cur.val = v

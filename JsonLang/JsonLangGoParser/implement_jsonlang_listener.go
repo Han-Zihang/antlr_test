@@ -16,7 +16,6 @@ const (
 	typeNumber = "num"
 	typeBool   = "bool"
 	typeNull   = "null"
-	typeIgnore = "pass"
 )
 
 type node struct {
@@ -74,28 +73,6 @@ type value struct {
 	pair    *pair
 }
 
-func (v *value) getValue() interface{} {
-	if v == nil {
-		return nil
-	}
-	switch v.tp {
-	case typeString:
-		return v.str
-	case typeNumber:
-		return v.num
-	case typeObject:
-		return v.obj
-	case typeArray:
-		return v.arr
-	case typeBool:
-		return v.boolean
-	case typeNull:
-		return nil
-	default:
-		return nil
-	}
-}
-
 func (v *value) getPayload() interface{} {
 	if v == nil {
 		return nil
@@ -114,14 +91,13 @@ func (v *value) getPayload() interface{} {
 	case typeNull:
 		return nil
 	case typePair:
-		return map[string]interface{}{
-			v.pair.k: v.pair.v.getPayload(),
-		}
+		return v.pair.getPayload()
 	default:
 		return nil
 	}
 }
 
+// DFS 过程中将节点压入这个栈中
 type stack struct {
 	cur *node
 	pre *stack
@@ -130,6 +106,7 @@ type stack struct {
 type JsonLangListenerImplement struct {
 	BaseJsonLangListener
 
+	// todo: 遍历语法树，发现错误时, 标记这个字段
 	stop bool
 
 	// 记录前几个遍历过的 token, 用来 debug
@@ -142,6 +119,7 @@ type JsonLangListenerImplement struct {
 	implement
 */
 
+// VisitTerminal 所有的叶子节点, 不论是是什么数据类型, 调用的都是这个接口
 func (s *JsonLangListenerImplement) VisitTerminal(n antlr.TerminalNode) {
 	s.addPreTokens(n.GetText())
 	s.terminalReceiver(n)
